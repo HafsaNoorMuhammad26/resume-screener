@@ -1,0 +1,25 @@
+# Set the default behavior for all files
+* text=auto
+
+# Force certain files to always use LF line endings
+*.py text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Force certain files to always use CRLF line endings
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.doc binary
+*.docx binary
+*.pkl binary
+
+myvenv/Lib/site-packages/plotly/** -text

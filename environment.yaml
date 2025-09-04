@@ -1,0 +1,17 @@
+name: resume-screener
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - streamlit
+    - pandas
+    - numpy
+    - scikit-learn
+    - nltk
+    - python-docx
+    - PyPDF2
+    - plotly
+    - wordcloud
