@@ -11,8 +11,13 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize, RegexpTokenizer
+from nltk.tokenize import word_tokenize
 import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import time
 
 # NLTK data download - put in try block
 try:
@@ -44,6 +49,18 @@ st.markdown("""
         padding: 20px;
         border-radius: 10px;
         margin-bottom: 20px;
+    }
+    .train-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .train-button:hover {
+        background-color: #45a049;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -116,7 +133,7 @@ def load_model():
             model = pickle.load(f)
         return model
     except:
-        st.error("Model file not found. Please run train_model.py first.")
+        st.error("Model file not found. Please train the model first.")
         return None
 
 @st.cache_resource
@@ -126,7 +143,7 @@ def load_vectorizer():
             vectorizer = pickle.load(f)
         return vectorizer
     except:
-        st.error("Vectorizer file not found. Please run train_model.py first.")
+        st.error("Vectorizer file not found. Please train the model first.")
         return None
 
 @st.cache_resource
@@ -148,15 +165,84 @@ def load_categories():
             "Arts"
         ]
 
+def train_mock_model():
+    """Create and train a mock model with sample data"""
+    # Create sample job categories
+    categories = [
+        "Data Scientist", 
+        "Software Engineer", 
+        "Web Developer", 
+        "HR",
+        "Business Development",
+        "Health",
+        "Advocate",
+        "Arts"
+    ]
+    
+    # Create sample training data
+    sample_texts = []
+    sample_labels = []
+    
+    for category in categories:
+        # Generate sample resumes for each category
+        for i in range(25):  # 25 samples per category
+            if category == "Data Scientist":
+                text = f"python machine learning data science analytics {category} algorithm model"
+            elif category == "Software Engineer":
+                text = f"java python c++ software development engineering {category} code"
+            elif category == "Web Developer":
+                text = f"html css javascript web development frontend backend {category}"
+            elif category == "HR":
+                text = f"human resources recruitment talent acquisition {category} management"
+            else:
+                text = f"skills experience education {category} professional"
+            
+            sample_texts.append(text)
+            sample_labels.append(category)
+    
+    # Preprocess the texts
+    processed_texts = [preprocess_text(text) for text in sample_texts]
+    
+    # Create and train the vectorizer
+    vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
+    X = vectorizer.fit_transform(processed_texts)
+    
+    # Create and train the model
+    model = LogisticRegression(multi_class='multinomial', solver='lbfgs', max_iter=1000)
+    model.fit(X, sample_labels)
+    
+    # Save the model and vectorizer
+    os.makedirs('models', exist_ok=True)
+    
+    with open('models/resume_classifier.pkl', 'wb') as f:
+        pickle.dump(model, f)
+    
+    with open('models/tfidf_vectorizer.pkl', 'wb') as f:
+        pickle.dump(vectorizer, f)
+    
+    with open('models/categories.pkl', 'wb') as f:
+        pickle.dump(categories, f)
+    
+    return model, vectorizer, categories
+
 def main():
     st.markdown('<h1 class="main-header">Resume Screener</h1>', unsafe_allow_html=True)
     
-    # Load categories
-    JOB_CATEGORIES = load_categories()
-    
-    # Sidebar
+    # Training section in sidebar
     with st.sidebar:
         st.title("Settings")
+        
+        # Model training option
+        st.subheader("Model Training")
+        if st.button("Train Model", key="train_button"):
+            with st.spinner("Training model... This may take a few moments."):
+                model, vectorizer, categories = train_mock_model()
+                st.success("Model trained successfully!")
+        
+        st.info("You can train the model or use the pre-trained one")
+        
+        # Load categories after potential training
+        JOB_CATEGORIES = load_categories()
         selected_category = st.selectbox("Select Target Job Role", JOB_CATEGORIES)
         st.info("Upload a resume to check its suitability for the selected role")
     
@@ -261,7 +347,7 @@ def main():
                         ax.axis('off')
                         st.pyplot(fig)
                 else:
-                    st.error("Please run train_model.py first to create the model.")
+                    st.error("Please train the model first using the button in the sidebar.")
             else:
                 st.error("Could not extract text from the file. Please try another file.")
         else:
@@ -269,12 +355,14 @@ def main():
             with col2:
                 st.info("""
                 ### How to use:
-                1. Select target job role from the sidebar
-                2. Upload a resume (PDF or DOCX)
-                3. View analysis results
+                1. First, train the model using the button in the sidebar
+                2. Select target job role from the sidebar
+                3. Upload a resume (PDF or DOCX)
+                4. View analysis results
                 
-                ### Before using:
-                Run train_model.py first to create the model
+                ### Note:
+                The model is trained on sample data. For better accuracy, 
+                use a real resume dataset.
                 """)
 
 if __name__ == "__main__":
