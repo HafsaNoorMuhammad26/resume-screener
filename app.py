@@ -62,8 +62,61 @@ st.markdown("""
     .train-button:hover {
         background-color: #45a049;
     }
+    .skill-pill {
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        margin: 3px;
+        display: inline-block;
+        font-size: 14px;
+    }
 </style>
 """, unsafe_allow_html=True)
+
+# Skills database for different job roles
+SKILLS_DATABASE = {
+    "Data Scientist": {
+        "core": ["Python", "Machine Learning", "Data Analysis", "Statistics", "SQL", "Data Visualization"],
+        "advanced": ["Deep Learning", "TensorFlow", "PyTorch", "Natural Language Processing", "Computer Vision", "Big Data"],
+        "tools": ["Pandas", "NumPy", "Scikit-learn", "Jupyter", "Tableau", "Power BI", "Hadoop", "Spark"]
+    },
+    "Software Engineer": {
+        "core": ["Java", "Python", "JavaScript", "C++", "Software Development", "Algorithms", "Data Structures"],
+        "advanced": ["React", "Node.js", "Spring Boot", "Django", "Microservices", "API Development", "System Design"],
+        "tools": ["Git", "Docker", "Kubernetes", "AWS", "Azure", "CI/CD", "Jenkins", "JIRA"]
+    },
+    "Web Developer": {
+        "core": ["HTML", "CSS", "JavaScript", "React", "Web Development", "UI/UX", "Responsive Design"],
+        "advanced": ["Node.js", "Express", "MongoDB", "REST API", "GraphQL", "TypeScript", "SASS", "LESS"],
+        "tools": ["Git", "VS Code", "Chrome DevTools", "Webpack", "Bootstrap", "Figma", "Adobe XD"]
+    },
+    "HR": {
+        "core": ["Recruitment", "Talent Acquisition", "Employee Relations", "HR Policies", "Interviewing", "Onboarding"],
+        "advanced": ["Performance Management", "Compensation", "Benefits", "HRIS", "Compliance", "Talent Management", "Succession Planning"],
+        "tools": ["LinkedIn Recruiter", "ATS", "Payroll Systems", "MS Office", "HR Analytics", "Workday", "SAP HR"]
+    },
+    "Business Development": {
+        "core": ["Market Research", "Lead Generation", "Client Acquisition", "Sales", "Negotiation", "Relationship Management"],
+        "advanced": ["Strategic Planning", "Partnership Development", "Market Analysis", "Competitive Intelligence", "CRM Management", "Sales Forecasting"],
+        "tools": ["CRM Software", "Salesforce", "HubSpot", "LinkedIn Sales Navigator", "MS Office", "Google Analytics"]
+    },
+    "Health": {
+        "core": ["Patient Care", "Medical Knowledge", "Clinical Skills", "Health Assessment", "Treatment Planning", "Medical Documentation"],
+        "advanced": ["Specialized Procedures", "Diagnostic Skills", "Therapeutic Techniques", "Healthcare Management", "Medical Research", "Public Health"],
+        "tools": ["Electronic Health Records", "Medical Software", "Diagnostic Equipment", "Telehealth Platforms", "Medical Databases", "Healthcare Apps"]
+    },
+    "Advocate": {
+        "core": ["Legal Research", "Case Analysis", "Client Counseling", "Drafting", "Litigation", "Legal Documentation"],
+        "advanced": ["Contract Law", "Corporate Law", "Intellectual Property", "Civil Law", "Criminal Law", "Alternative Dispute Resolution"],
+        "tools": ["Legal Databases", "MS Office", "Document Management", "E-filing", "Case Management Software", "Legal Research Tools"]
+    },
+    "Arts": {
+        "core": ["Creative Thinking", "Visual Communication", "Design Principles", "Color Theory", "Typography", "Sketching"],
+        "advanced": ["Digital Illustration", "Photo Editing", "3D Modeling", "Animation", "Art Direction", "Brand Identity"],
+        "tools": ["Adobe Photoshop", "Adobe Illustrator", "Adobe InDesign", "Procreate", "Blender", "CorelDRAW"]
+    }
+}
 
 def extract_text_from_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
@@ -126,6 +179,31 @@ def preprocess_text(text):
         text = re.sub(r'[^a-zA-Z\s]', '', text)
         return text
 
+def extract_skills(text, job_role):
+    """Extract skills from text based on job role"""
+    text_lower = text.lower()
+    matched_skills = []
+    
+    if job_role in SKILLS_DATABASE:
+        # Check core skills
+        for skill in SKILLS_DATABASE[job_role]["core"]:
+            if re.search(r'\b' + re.escape(skill.lower()) + r'\b', text_lower):
+                matched_skills.append(skill)
+        
+        # Check advanced skills
+        for skill in SKILLS_DATABASE[job_role]["advanced"]:
+            if re.search(r'\b' + re.escape(skill.lower()) + r'\b', text_lower):
+                if skill not in matched_skills:
+                    matched_skills.append(skill)
+        
+        # Check tools
+        for skill in SKILLS_DATABASE[job_role]["tools"]:
+            if re.search(r'\b' + re.escape(skill.lower()) + r'\b', text_lower):
+                if skill not in matched_skills:
+                    matched_skills.append(skill)
+    
+    return matched_skills
+
 @st.cache_resource
 def load_model():
     try:
@@ -154,30 +232,12 @@ def load_categories():
         return categories
     except:
         # Default categories if file not found
-        return [
-            "Data Scientist", 
-            "Software Engineer", 
-            "Web Developer", 
-            "HR",
-            "Business Development",
-            "Health",
-            "Advocate",
-            "Arts"
-        ]
+        return list(SKILLS_DATABASE.keys())
 
 def train_mock_model():
     """Create and train a mock model with sample data"""
     # Create sample job categories
-    categories = [
-        "Data Scientist", 
-        "Software Engineer", 
-        "Web Developer", 
-        "HR",
-        "Business Development",
-        "Health",
-        "Advocate",
-        "Arts"
-    ]
+    categories = list(SKILLS_DATABASE.keys())
     
     # Create sample training data
     sample_texts = []
@@ -186,16 +246,23 @@ def train_mock_model():
     for category in categories:
         # Generate sample resumes for each category
         for i in range(25):  # 25 samples per category
-            if category == "Data Scientist":
-                text = f"python machine learning data science analytics {category} algorithm model"
-            elif category == "Software Engineer":
-                text = f"java python c++ software development engineering {category} code"
-            elif category == "Web Developer":
-                text = f"html css javascript web development frontend backend {category}"
-            elif category == "HR":
-                text = f"human resources recruitment talent acquisition {category} management"
-            else:
-                text = f"skills experience education {category} professional"
+            # Get skills for this category
+            core_skills = SKILLS_DATABASE[category]["core"]
+            advanced_skills = SKILLS_DATABASE[category]["advanced"]
+            tools = SKILLS_DATABASE[category]["tools"]
+            
+            # Select some skills for this sample
+            num_core = min(3, len(core_skills))
+            num_advanced = min(2, len(advanced_skills))
+            num_tools = min(2, len(tools))
+            
+            selected_core = np.random.choice(core_skills, num_core, replace=False)
+            selected_advanced = np.random.choice(advanced_skills, num_advanced, replace=False)
+            selected_tools = np.random.choice(tools, num_tools, replace=False)
+            
+            # Create the text
+            skills_text = ' '.join(list(selected_core) + list(selected_advanced) + list(selected_tools))
+            text = f"{skills_text} {category} professional with experience"
             
             sample_texts.append(text)
             sample_labels.append(category)
@@ -287,6 +354,9 @@ def main():
                     prediction = model.predict(text_vector)
                     predicted_category = prediction[0]
                     
+                    # Extract skills for the predicted role
+                    matched_skills = extract_skills(raw_text, predicted_category)
+                    
                     # Predict probability
                     probabilities = model.predict_proba(text_vector)[0]
                     max_probability = max(probabilities)
@@ -304,9 +374,16 @@ def main():
                     
                     # Result box
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
-                    st.write(f"**Predicted Role:** {predicted_category}")
+                    st.write(f"**Extracted Job Role:** {predicted_category}")
                     st.write(f"**Fit Score:** {fit_score}%")
                     st.progress(fit_score/100)
+                    
+                    # Display matched skills
+                    if matched_skills:
+                        skills_html = "".join([f'<span class="skill-pill">{skill}</span>' for skill in matched_skills])
+                        st.markdown(f"**Key Matched Skills:** {skills_html}", unsafe_allow_html=True)
+                    else:
+                        st.write("**Key Matched Skills:** No specific skills detected")
                     
                     # Target role comparison
                     target_idx = JOB_CATEGORIES.index(selected_category)

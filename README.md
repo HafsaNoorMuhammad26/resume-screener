@@ -117,7 +117,8 @@ Contributions are welcome! 🚀
 ## 🙏 Acknowledgments
 
 * **Hafsa Noor Muhammad** (Project Author)
-
+Streamlit
+ for the awesome framework
 
 ---
 
