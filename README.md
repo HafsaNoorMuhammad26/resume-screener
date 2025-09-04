@@ -23,7 +23,6 @@ Built using **Python, Scikit-Learn, and Streamlit**, this project demonstrates h
 ## 📂 Project Structure  
 
 ```
-
 resume-screener/
 ├── app.py                  # Streamlit frontend
 ├── train\_model.py          # Train and save ML model
@@ -36,26 +35,23 @@ resume-screener/
 ├── setup.py                # Package setup
 └── README.md               # Project documentation
 
-````
-
+```
 ---
 
-```
 
 ## ⚙️ Installation
 
 
-### 🔹 Option 1: Using Conda (Recommended)  
+   ### 🔹 Option 1: Using Conda (Recommended)  
 
-   ```bash
-   git clone https://github.com/HafsaNoorMuhammad26/resume-screener.git
-   cd resume-screener
-   conda env create -f environment.yml
-   conda activate resume-screener
-   ````
+      ```bash
+      git clone https://github.com/HafsaNoorMuhammad26/resume-screener.git
+      cd resume-screener
+      conda env create -f environment.yml
+      conda activate resume-screener
+      ```
 
-```
-### 🔹 Option 2: Using pip
+   ### 🔹 Option 2: Using pip
 
    ```bash
    git clone https://github.com/HafsaNoorMuhammad26/resume-screener.git
@@ -63,12 +59,12 @@ resume-screener/
    pip install -r requirements.txt
    ```
 
-Also, download NLTK resources if required:
+   Also, download NLTK resources if required:
 
-```bash
-python nltk_download.py
-```
 
+   ```bash
+   python nltk_download.py
+   ```
 ---
 
 ## 🖥️ Usage
