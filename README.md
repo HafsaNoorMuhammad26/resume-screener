@@ -1,41 +1,129 @@
-# Resume Screening App
+# 📄 Resume Screening App  
 
-An automated resume screening application that classifies resumes into job categories and provides a fit score.
+## 🚀 Overview  
 
-## Setup
+The **Resume Screening App** is a machine learning–powered tool designed to **automatically classify resumes** into job categories and provide a "fit score" for recruiters.  
+It helps streamline the hiring process by reducing manual effort and ensuring consistent evaluation.  
 
-### Using Conda (Recommended)
-1. `conda env create -f environment.yml`
-2. `conda activate resume-screener`
+Built using **Python, Scikit-Learn, and Streamlit**, this project demonstrates how Natural Language Processing (NLP) can be applied in real-world HR tech.  
 
-### Using pip
-1. `pip install -r requirements.txt`
+---
 
-## Running the Application
+## ✨ Features  
 
-1. Train the model first (if you have the dataset):
-   `python train_model.py`
+✅ Upload and process resumes (text-based format)  
+✅ Classify resumes into predefined categories (e.g., Data Science, HR, IT, etc.)  
+✅ Assign a confidence score for each prediction  
+✅ User-friendly **Streamlit web interface**  
+✅ Modular code for **retraining the model** with new datasets  
+✅ Ready for **deployment** on Streamlit Cloud or Heroku  
 
-2. Run the Streamlit app:
-   `streamlit run app.py`
+---
 
-## Deployment
+## 📂 Project Structure  
 
-### Streamlit Cloud
+```
+
+resume-screener/
+├── app.py                  # Streamlit frontend
+├── train\_model.py          # Train and save ML model
+├── utils/                  # Helper functions (preprocessing, text cleaning, etc.)
+├── models/                 # Trained ML model + vectorizer
+├── UpdatedResumeDataSet.csv # Training dataset
+├── nltk\_download.py        # Downloads required NLTK resources
+├── requirements.txt        # pip dependencies
+├── environment.yml         # Conda environment setup
+├── setup.py                # Package setup
+└── README.md               # Project documentation
+
+````
+
+---
+
+```
+
+## ⚙️ Installation
+
+
+### 🔹 Option 1: Using Conda (Recommended)  
+
+   ```bash
+   git clone https://github.com/HafsaNoorMuhammad26/resume-screener.git
+   cd resume-screener
+   conda env create -f environment.yml
+   conda activate resume-screener
+   ````
+
+```
+### 🔹 Option 2: Using pip
+
+   ```bash
+   git clone https://github.com/HafsaNoorMuhammad26/resume-screener.git
+   cd resume-screener
+   pip install -r requirements.txt
+   ```
+
+Also, download NLTK resources if required:
+
+```bash
+python nltk_download.py
+```
+
+---
+
+## 🖥️ Usage
+
+### 1️⃣ Train the Model
+
+```bash
+python train_model.py
+```
+
+This script trains the model using `UpdatedResumeDataSet.csv` and saves the classifier in the `models/` folder.
+
+### 2️⃣ Run the App
+
+```bash
+streamlit run app.py
+```
+
+The app will start locally. Open the provided URL in your browser (usually `http://localhost:8501`).
+
+---
+
+## 🌐 Deployment
+
+### 🔹 Streamlit Cloud
+
 1. Fork this repository
-2. Go to [Streamlit Cloud](https://streamlit.io/cloud)
-3. Connect your GitHub account and select the repository
-4. Deploy!
+2. Go to [Streamlit Cloud](https://streamlit.io/cloud) and connect your GitHub
+3. Select this repo and deploy
 
-### Heroku
-1. Install Heroku CLI
-2. `heroku create your-app-name`
-3. `git push heroku main`
+---
 
-## Project Structure
-- `app.py` - Main Streamlit application
-- `train_model.py` - Model training script
-- `utils/` - Utility functions for text extraction and preprocessing
-- `models/` - Saved model and vectorizer
-- `requirements.txt` - Python dependencies
-- `environment.yml` - Conda environment specification
+
+
+
+## 🤝 Contributing
+
+Contributions are welcome! 🚀
+
+* Fork the repo
+* Create a new branch (`feature-xyz`)
+* Commit your changes
+* Open a pull request
+
+---
+
+
+---
+
+## 🙏 Acknowledgments
+
+* **Hafsa Noor Muhammad** (Project Author)
+
+
+---
+
+### ⭐ If you find this project useful, don’t forget to give it a star on GitHub! ⭐
+
